@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Socket.IO Chat</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="icon" href="data:,">
+    
+  </head>
+  <body>
+
+    <audio id="notificationSound" src="sound.mp3" preload="auto"></audio>
+
+    <div id="main-container">
+      <!-- Chat Panel -->
+      <div id="chat-container">
+
+
+        <div id="chat-header">
+          Chat Room
+          <button id="sendPrivateMessageBtn" style="float: right; font-size: 0.8rem; padding: 5px 10px; background: #2e59d9; border: none; color: white; border-radius: 8px; cursor: pointer;">
+            📩 Private Message
+          </button>
+        </div>
+        
+
+
+        <ul id="messages"></ul>
+        <div id="typingIndicator" class="typing-dots"></div>
+        <form id="form" action="">
+          <input id="input" autocomplete="off" placeholder="Type a message..." />
+          <button>Send</button>
+        </form>
+      </div>
+
+      <!-- Sidebar for User List -->
+      <div id="sidebar">
+        <h3>Users</h3>
+        <ul id="userList"></ul>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
