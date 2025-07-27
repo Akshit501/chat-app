@@ -9,13 +9,12 @@ const cors = require('cors'); // ← ADD THIS LINE
 const app = express();
 const server = http.createServer(app);
 
-// ⬇️ ADD YOUR FRONTEND URL FROM VERCEL HERE
-const FRONTEND_ORIGIN = /^https:\/\/chat-[^.]+-akshit-negis-projects\.vercel\.app$/;
+
 
 
 // Enable CORS for Express
 app.use(cors({
-  origin: FRONTEND_ORIGIN,
+  origin: ["https://chat-app-92fs.vercel.app"],
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -23,7 +22,7 @@ app.use(cors({
 // Enable CORS for Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_ORIGIN,
+    origin: ["https://chat-app-92fs.vercel.app"],
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -70,7 +69,7 @@ io.on('connection', async (socket) => {
     const newMessage = new Message({
       username: data.username,
       message: data.message
-    });
+    }); 
 
     newMessage.save().then(() => {
       io.emit('chat message', data);
