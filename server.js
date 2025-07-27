@@ -10,7 +10,8 @@ const app = express();
 const server = http.createServer(app);
 
 // ⬇️ ADD YOUR FRONTEND URL FROM VERCEL HERE
-const FRONTEND_ORIGIN = 'https://chat-mbiv35n1f-akshit-negis-projects.vercel.app';
+const FRONTEND_ORIGIN = /^https:\/\/chat-[^.]+-akshit-negis-projects\.vercel\.app$/;
+
 
 // Enable CORS for Express
 app.use(cors({
