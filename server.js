@@ -12,10 +12,15 @@ const io = new Server(server);
 const users = new Map(); // socket.id -> username
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/chatapp', {
+mongoose.connect('mongodb+srv://akshitnegi5011:mychatapp123@cluster0.2nxbofw.mongodb.net/chatapp?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(() => {
+  console.log('✅ Connected to MongoDB Atlas');
+}).catch((err) => {
+  console.error('❌ MongoDB connection error:', err);
 });
+
 
 // Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
