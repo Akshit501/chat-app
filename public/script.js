@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const socket = io();
+
+  const socket = io('https://chat-app-dz69.onrender.com');
   const form = document.getElementById('form');
   const input = document.getElementById('input');
   const messagesList = document.getElementById('messages');
