@@ -4,10 +4,29 @@ const { Server } = require("socket.io");
 const path = require('path');
 const mongoose = require('mongoose');
 const Message = require('./models/message');
+const cors = require('cors'); // ← ADD THIS LINE
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// ⬇️ ADD YOUR FRONTEND URL FROM VERCEL HERE
+const FRONTEND_ORIGIN = 'https://chat-mbiv35n1f-akshit-negis-projects.vercel.app';
+
+// Enable CORS for Express
+app.use(cors({
+  origin: FRONTEND_ORIGIN,
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+
+// Enable CORS for Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: FRONTEND_ORIGIN,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 
 const users = new Map(); // socket.id -> username
 
@@ -21,20 +40,18 @@ mongoose.connect('mongodb+srv://akshitnegi5011:mychatapp123@cluster0.2nxbofw.mon
   console.error('❌ MongoDB connection error:', err);
 });
 
-
-// Serve static files from the 'public' folder
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve the frontend HTML file
+// Serve frontend HTML
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Handle Socket.IO connections
+// Socket.IO logic
 io.on('connection', async (socket) => {
   console.log('A user connected');
 
-  // Load previous chat messages
   try {
     const messages = await Message.find().sort({ timestamp: 1 }).limit(100);
     socket.emit('chat history', messages);
@@ -42,14 +59,12 @@ io.on('connection', async (socket) => {
     console.error('Error fetching chat history:', err);
   }
 
-  // Set the username
   socket.on('set username', (username) => {
     users.set(socket.id, username);
-    io.emit('user joined', username); // Broadcast that the user joined
-    io.emit('update user list', Array.from(users.values())); // Update the user list
+    io.emit('user joined', username);
+    io.emit('update user list', Array.from(users.values()));
   });
 
-  // Handle public chat messages
   socket.on('chat message', (data) => {
     const newMessage = new Message({
       username: data.username,
@@ -57,13 +72,12 @@ io.on('connection', async (socket) => {
     });
 
     newMessage.save().then(() => {
-      io.emit('chat message', data); // Broadcast the new message to all clients
+      io.emit('chat message', data);
     }).catch((err) => {
       console.log('Error saving message to DB:', err);
     });
   });
 
-  // Handle private messages
   socket.on('private message', (data) => {
     const recipientSocket = getSocketIdFromUsername(data.to);
     if (recipientSocket) {
@@ -74,7 +88,6 @@ io.on('connection', async (socket) => {
     }
   });
 
-  // Typing notifications
   socket.on('typing', (username) => {
     socket.broadcast.emit('typing', username);
   });
@@ -83,7 +96,6 @@ io.on('connection', async (socket) => {
     socket.broadcast.emit('stop typing');
   });
 
-  // Handle disconnection
   socket.on('disconnect', () => {
     const username = users.get(socket.id);
     if (username) {
@@ -94,7 +106,6 @@ io.on('connection', async (socket) => {
     console.log('A user disconnected');
   });
 
-  // Helper to get socket ID by username
   function getSocketIdFromUsername(username) {
     for (let [socketId, user] of users.entries()) {
       if (user === username) return socketId;
