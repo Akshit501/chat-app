@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const socket = io('https://chat-app-dz69.onrender.com');
+  const socket = io('https://chat-app-1-ueqg.onrender.com');
+
   const form = document.getElementById('form');
   const input = document.getElementById('input');
   const messagesList = document.getElementById('messages');
